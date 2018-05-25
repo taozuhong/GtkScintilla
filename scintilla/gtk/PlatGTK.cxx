@@ -25,6 +25,11 @@
 #include "UniConversion.h"
 #include "XPM.h"
 
+#if defined(__clang__)
+// Clang 3.0 incorrectly displays  sentinel warnings. Fixed by clang 3.1.
+#pragma GCC diagnostic ignored "-Wsentinel"
+#endif
+
 /* GLIB must be compiled with thread support, otherwise we
    will bail on trying to use locks, and that could lead to
    problems for someone.  `glib-config --libs gthread` needs
@@ -100,9 +105,11 @@ struct LOGFONT {
 static GMutex *fontMutex = NULL;
 
 static void InitializeGLIBThreads() {
+#if !GLIB_CHECK_VERSION(2,31,0)
 	if (!g_thread_supported()) {
 		g_thread_init(NULL);
 	}
+#endif
 }
 #endif
 
@@ -110,7 +117,12 @@ static void FontMutexAllocate() {
 #if USE_LOCK
 	if (!fontMutex) {
 		InitializeGLIBThreads();
+#if GLIB_CHECK_VERSION(2,31,0)
+		fontMutex = g_new(GMutex, 1);
+		g_mutex_init(fontMutex);
+#else
 		fontMutex = g_mutex_new();
+#endif
 	}
 #endif
 }
@@ -118,7 +130,12 @@ static void FontMutexAllocate() {
 static void FontMutexFree() {
 #if USE_LOCK
 	if (fontMutex) {
+#if GLIB_CHECK_VERSION(2,31,0)
+		g_mutex_clear(fontMutex);
+		g_free(fontMutex);
+#else
 		g_mutex_free(fontMutex);
+#endif
 		fontMutex = NULL;
 	}
 #endif
@@ -536,6 +553,8 @@ void SurfaceImpl::Init(SurfaceID sid, WindowID wid) {
 	PLATFORM_ASSERT(wid);
 	context = cairo_reference(reinterpret_cast<cairo_t *>(sid));
 	pcontext = gtk_widget_create_pango_context(PWidget(wid));
+	// update the Pango context in case sid isn't the widget's surface
+	pango_cairo_update_context(context, pcontext);
 	layout = pango_layout_new(pcontext);
 	cairo_set_line_width(context, 1);
 	createdGC = true;
@@ -549,6 +568,8 @@ void SurfaceImpl::InitPixMap(int width, int height, Surface *surface_, WindowID 
 	PLATFORM_ASSERT(wid);
 	context = cairo_reference(surfImpl->context);
 	pcontext = gtk_widget_create_pango_context(PWidget(wid));
+	// update the Pango context in case surface_ isn't the widget's surface
+	pango_cairo_update_context(context, pcontext);
 	PLATFORM_ASSERT(pcontext);
 	layout = pango_layout_new(pcontext);
 	PLATFORM_ASSERT(layout);
@@ -1577,6 +1598,11 @@ PRectangle ListBoxX::GetDesiredRect() {
 			rows = desiredVisibleRows;
 
 		GtkRequisition req;
+#if GTK_CHECK_VERSION(3,0,0)
+		// This, apparently unnecessary call, ensures gtk_tree_view_column_cell_get_size
+		// returns reasonable values. 
+		gtk_widget_get_preferred_size(GTK_WIDGET(scroller), NULL, &req);
+#endif
 		int height;
 
 		// First calculate height of the clist for our desired visible
@@ -1610,7 +1636,7 @@ PRectangle ListBoxX::GetDesiredRect() {
 		gtk_widget_size_request(GTK_WIDGET(scroller), &req);
 #endif
 		rc.right = req.width;
-		rc.bottom = req.height;
+		rc.bottom = Platform::Maximum(height, req.height);
 
 		gtk_widget_set_size_request(GTK_WIDGET(list), -1, -1);
 		int width = maxItemCharacters;
@@ -1848,7 +1874,7 @@ void ListBoxX::RegisterImage(int type, const char *xpm_data) {
 }
 
 void ListBoxX::RegisterRGBAImage(int type, int width, int height, const unsigned char *pixelsImage) {
-	RegisterRGBA(type, new RGBAImage(width, height, pixelsImage));
+	RegisterRGBA(type, new RGBAImage(width, height, 1.0, pixelsImage));
 }
 
 void ListBoxX::ClearRegisteredImages() {

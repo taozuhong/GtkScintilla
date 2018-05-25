@@ -146,12 +146,13 @@ int Scintilla_LinkLexers() {
 	LINK_LEXER(lmNull);
 	LINK_LEXER(lmOctave);
 	LINK_LEXER(lmOpal);
+	LINK_LEXER(lmOScript);
 	LINK_LEXER(lmPascal);
 	LINK_LEXER(lmPB);
 	LINK_LEXER(lmPerl);
 	LINK_LEXER(lmPHPSCRIPT);
 	LINK_LEXER(lmPLM);
-	LINK_LEXER(lmPo);
+	LINK_LEXER(lmPO);
 	LINK_LEXER(lmPOV);
 	LINK_LEXER(lmPowerPro);
 	LINK_LEXER(lmPowerShell);
@@ -181,6 +182,7 @@ int Scintilla_LinkLexers() {
 	LINK_LEXER(lmVBScript);
 	LINK_LEXER(lmVerilog);
 	LINK_LEXER(lmVHDL);
+	LINK_LEXER(lmVisualProlog);
 	LINK_LEXER(lmXML);
 	LINK_LEXER(lmYAML);
 

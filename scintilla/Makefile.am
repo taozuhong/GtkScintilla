@@ -1,7 +1,8 @@
 noinst_LTLIBRARIES				=	libscintilla.la
 
-libscintilla_la_LIBADD			=	@GTK_LIBS@
-libscintilla_la_CPPFLAGS		=	-I$(top_srcdir)/scintilla/include \
+libscintilla_la_LIBADD			=	@GTK_LIBS@ $(GTKSCINTILLA_LIBS)
+libscintilla_la_CPPFLAGS		=	$(GTKSCINTILLA_CFLAGS) \
+									-I$(top_srcdir)/scintilla/include \
 									-I$(top_srcdir)/scintilla/src \
 									-I$(top_srcdir)/scintilla/lexlib \
 									@GTK_CFLAGS@ -DGTK -DSCI_LEXER
@@ -11,6 +12,8 @@ scintilla_include_HEADERS		= 	include/Scintilla.h \
 									include/SciLexer.h \
 									include/ScintillaWidget.h \
 									include/Scintilla.iface
+
+libscintilla_la_LDFLAGS			= -no-undefined
 
 libscintilla_la_SOURCES			=	src/PositionCache.cxx \
 									src/Indicator.cxx \
@@ -123,6 +126,9 @@ libscintilla_la_SOURCES			=	src/PositionCache.cxx \
 									lexers/LexCoffeeScript.cxx \
 									lexers/LexECL.cxx \
 									lexers/LexTCMD.cxx \
+									lexers/LexVisualProlog.cxx \
+									lexers/LexPO.cxx \
+									lexers/LexOScript.cxx \
 									lexlib/LexerBase.cxx \
 									lexlib/Accessor.cxx \
 									lexlib/StyleContext.cxx \
