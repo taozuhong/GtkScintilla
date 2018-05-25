@@ -1,6 +1,6 @@
 lib_LTLIBRARIES					=	libgtkscintilla-1.0.la
 
-libgtkscintilla_1_0_la_LDFLAGS	=	-version-info 0:0:0 -lstdc++
+libgtkscintilla_1_0_la_LDFLAGS	=	-version-info 0:0:0 -no-undefined -lstdc++
 
 libgtkscintilla_1_0_la_LIBADD	=	@GTK_LIBS@ $(GTKSCINTILLA_LIBS)\
 									$(top_builddir)/scintilla/libscintilla.la
