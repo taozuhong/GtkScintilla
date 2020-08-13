@@ -2,7 +2,7 @@
 #include <gtkscintilla.h>
 
 #ifndef DEMO_UI_FILE
-#define DEMO_UI_FILE "/usr/local/share/gtkscintilla-1.0/demo2/demo2.ui"
+#define DEMO_UI_FILE "demo2.ui"
 #endif
 
 #ifndef DEMO_SAMPLE_FILE
@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 	gtk_init(&argc, &argv);
 
 	builder = gtk_builder_new();
-	if (!gtk_builder_add_from_file(builder, DEMO_UI_FILE, &error))
+	if (!gtk_builder_add_from_file(builder, "demo2.ui", &error))
 	{
 		g_printerr("Error: %s\n", error->message);
 		g_error_free(error);

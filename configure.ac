@@ -11,7 +11,7 @@ AM_PROG_CC_C_O
 AC_PROG_INSTALL
 AC_PROG_LIBTOOL
 
-PKG_CHECK_MODULES([GTK], [gtk+-2.0])
+PKG_CHECK_MODULES([GTK], [gtk+-3.0])
 
 AC_PATH_PROG([GLIB_MKENUMS], [glib-mkenums], [no])
 AC_SUBST([GLIB_MKENUMS])
@@ -23,7 +23,7 @@ GTK_DOC_CHECK([1.14], [--flavour no-tmpl])
 
 GOBJECT_INTROSPECTION_CHECK([0.6.7])
 
-pkg_modules="gtk+-2.0 glib-2.0 gthread-2.0 gmodule-2.0"
+pkg_modules="gtk+-3.0 glib-2.0 gthread-2.0 gmodule-2.0"
 
 PKG_CHECK_MODULES([GTKSCINTILLA], [$pkg_modules])
 AC_SUBST(GTKSCINTILLA_CFLAGS)
